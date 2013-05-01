@@ -76,12 +76,15 @@
   [fs pathname]
   (.getPath fs pathname (make-array String 0)))
 
-(defn arg-count
-  "Uses reflection to work out how many arguments a function takes"
-  [f]
-  (let [m (first (.getDeclaredMethods (class f)))
-        p (.getParameterTypes m)]
-    (alength p)))
+(defn has-arity?
+  "Uses reflection to work out how many arguments a function takes and
+   tells you whether there is an appropriate arity version for the
+   n-args you want. Note that this gets confusing with varargs, as the
+   list of varargs is passed in as a single list, so [x & args] has
+   arity 2"
+  [arity f]
+  (let [m (.getDeclaredMethods (class f))]
+    (some #(= arity (alength (.getParameterTypes %))) m)))
 
 (defn validate-handlers
   "Makes sure that the handlers map contains only keys we have an event
@@ -90,7 +93,7 @@
   (when-not (subset? (set (keys handlers)) (set (keys kw-to-event)))
     (throw (IllegalArgumentException. (str "Unsupported handler event(s) " (keys handlers)
                                            " known handlers are " (keys kw-to-event)))))
-  (when-not (every? (fn [f] (= 1 (arg-count f))) (vals handlers))
+  (when-not (every? (partial has-arity? 1) (vals handlers))
     (throw (IllegalArgumentException. "Handlers must be functions which take a single parameter (the file affected)"))))
 
 (defn watch-path
