@@ -90,11 +90,15 @@
   "Makes sure that the handlers map contains only keys we have an event
    for and only single arity functions, else throw"
   [handlers]
-  (when-not (subset? (set (keys handlers)) (set (keys kw-to-event)))
-    (throw (IllegalArgumentException. (str "Unsupported handler event(s) " (keys handlers)
-                                           " known handlers are " (keys kw-to-event)))))
+  (when-not (subset? (set (keys handlers))
+                     (set (keys kw-to-event)))
+    (throw (IllegalArgumentException.
+            (str "Unsupported handler event(s) "
+                 (keys handlers)
+                 " known handlers are " (keys kw-to-event)))))
   (when-not (every? (partial has-arity? 1) (vals handlers))
-    (throw (IllegalArgumentException. "Handlers must be functions which take a single parameter (the file affected)"))))
+    (throw (IllegalArgumentException.
+            "Handlers must be functions which take a single parameter (the file affected)"))))
 
 (defn watch-path
   "Start watching a path and call the handlers if files are
@@ -104,7 +108,7 @@
    The handlers are given via keyword args, currently supported keywords
    are :create, :modify and :delete.
 
-   Handler functions should take a single argument, the File affected by
+   Handler functions should take a single argument, the Path affected by
    the change."
   [pathname & {:as handlers}]
   (validate-handlers handlers)
