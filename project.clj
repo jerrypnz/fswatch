@@ -1,4 +1,4 @@
-(defproject fswatch/fswatch "0.1.0-SNAPSHOT"
+(defproject fswatch/fswatch "0.2.0-SNAPSHOT"
   :description "File system watcher powered by Java 7 FileSystem API"
   :url "http://github.com/moonranger/fswatch"
   :license {:name "Eclipse Public License"
